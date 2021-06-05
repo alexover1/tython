@@ -3,13 +3,13 @@
 ############################################
 
 from enum import Enum
+from dataclasses import dataclass
 
 
 class TokenType(Enum):
+    NUMBER = "NUMBER"
     INT = "INT"
     FLOAT = "FLOAT"
-    IDENTIFIER = "IDENTIFIER"
-    KEYWORD = "KEYWORD"
     PLUS = "PLUS"
     MINUS = "MINUS"
     MUL = "MUL"
@@ -17,19 +17,17 @@ class TokenType(Enum):
     POWER = "POWER"
     LPAREN = "LPAREN"
     RPAREN = "RPAREN"
-    EQ = "EQ"
-    EE = "EE"
-    NE = "NE"
-    LT = "LT"
-    GT = "GT"
-    LTE = "LTE"
-    GTE = "GTE"
+    KEYWORD = "KEYWORD"
+    TYPE = "TYPE"
+    IDENTIFIER = "IDENTIFIER"
     EOF = "EOF"
 
 
-KEYWORDS = ["int", "and", "or", "not"]
+KEYWORDS = ["if", ":", ";", "typeof"]
+TYPES = ["int", "str"]
 
 
+@dataclass
 class Token:
     def __init__(
         self, type_: TokenType, value=None, pos_start=None, pos_end=None
@@ -45,10 +43,5 @@ class Token:
         if pos_end:
             self.pos_end = pos_end
 
-    def matches(self, type_, value):
-        return self.type == type_ and self.value == value
-
-    def __repr__(self) -> str:
-        if self.value:
-            return f"{self.type}:{self.value}"
-        return f"{self.type}"
+    def __repr__(self):
+        return self.type.name + (f":{self.value}" if self.value != None else "")

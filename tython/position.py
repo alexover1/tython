@@ -1,8 +1,3 @@
-############################################
-# POSITION
-############################################
-
-
 class Position:
     def __init__(self, idx, ln, col, fn, ftxt) -> None:
         self.idx = idx

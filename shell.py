@@ -1,10 +1,10 @@
-from tython.tython import run
+from tython.main import run
 
 while True:
     text = input("> ")
     result, error = run("<stdin>", text)
 
     if error:
-        print(error.as_string())
+        print(error)
     else:
         print(result)
