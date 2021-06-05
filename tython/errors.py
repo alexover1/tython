@@ -66,14 +66,14 @@ class Error:
 
 class IllegalCharError(Error):
     def __init__(self, pos_start, pos_end, details: str):
-        super().__init__(pos_start, pos_end, Errors.IllegalCharError, details)
+        super().__init__(pos_start, pos_end, Errors.IllegalCharError.value, details)
 
 
 class ExpectedCharError(Error):
     def __init__(self, pos_start, pos_end, details: str):
-        super().__init__(pos_start, pos_end, Errors.ExpectedCharError, details)
+        super().__init__(pos_start, pos_end, Errors.ExpectedCharError.value, details)
 
 
 class SyntaxError(Error):
     def __init__(self, pos_start, pos_end, details: str):
-        super().__init__(pos_start, pos_end, Errors.SyntaxError, details)
+        super().__init__(pos_start, pos_end, Errors.SyntaxError.value, details)

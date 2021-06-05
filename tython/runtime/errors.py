@@ -7,7 +7,7 @@ from ..errors import Error, Errors, string_with_arrows
 
 class TypeError(Error):
     def __init__(self, pos_start, pos_end, details: str):
-        super().__init__(pos_start, pos_end, Errors.TypeError, details)
+        super().__init__(pos_start, pos_end, Errors.TypeError.value, details)
 
 
 class RuntimeError(Error):

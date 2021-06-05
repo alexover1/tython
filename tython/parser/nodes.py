@@ -6,7 +6,8 @@
 class NumberNode:
     """
     Defines a number node
-        ex: INT:5
+        ex: NUMBER:5
+        ex: NUMBER:2.3
     """
 
     def __init__(self, tok):
@@ -17,6 +18,26 @@ class NumberNode:
 
     def __repr__(self) -> str:
         return f"{self.tok}"
+
+
+class IntNode(NumberNode):
+    """
+    Defines a number node
+        ex: INT:5
+    """
+
+    def __init__(self, tok):
+        super().__init__(tok)
+
+
+class FloatNode(NumberNode):
+    """
+    Defines a float node
+        ex: FLAOT:2.3
+    """
+
+    def __init__(self, tok):
+        super().__init__(tok)
 
 
 class BinOpNode:
@@ -52,3 +73,21 @@ class UnaryOpNode:
 
     def __repr__(self):
         return f"({self.op_tok}, {self.node})"
+
+
+class VarAssignNode:
+    def __init__(self, var_name_tok, value_node, type_):
+        self.var_name_tok = var_name_tok
+        self.value_node = value_node
+        self.type = type_
+
+        self.pos_start = self.var_name_tok.pos_start
+        self.pos_end = self.value_node.pos_end
+
+
+class VarAccessNode:
+    def __init__(self, var_name_tok):
+        self.var_name_tok = var_name_tok
+
+        self.pos_start = self.var_name_tok.pos_start
+        self.pos_end = self.var_name_tok.pos_end

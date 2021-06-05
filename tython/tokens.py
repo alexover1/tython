@@ -4,6 +4,7 @@
 
 from enum import Enum
 from dataclasses import dataclass
+from .runtime.types import Types
 
 
 class TokenType(Enum):
@@ -20,11 +21,18 @@ class TokenType(Enum):
     KEYWORD = "KEYWORD"
     TYPE = "TYPE"
     IDENTIFIER = "IDENTIFIER"
+    EQ = "EQ"
+    EE = "EE"
+    NE = "NE"
+    LT = "LT"
+    GT = "GT"
+    LTE = "LTE"
+    GTE = "GTE"
     EOF = "EOF"
 
 
-KEYWORDS = ["if", ":", ";", "typeof"]
-TYPES = ["int", "str"]
+KEYWORDS = ["and", "or", "not"]
+TYPES = [Types.Int.value, Types.Float.value, Types.String.value]
 
 
 @dataclass
@@ -45,3 +53,6 @@ class Token:
 
     def __repr__(self):
         return self.type.name + (f":{self.value}" if self.value != None else "")
+
+    def matches(self, type_, value):
+        return self.type == type_ and self.value == value
