@@ -6,5 +6,5 @@ while True:
 
     if error:
         print(error)
-    else:
+    elif result:
         print(result)

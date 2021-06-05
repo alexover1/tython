@@ -38,7 +38,85 @@ class Parser:
 
     ############################################
 
+    def if_expr(self):
+        res = ParseResult()
+        cases = []
+        else_case = None
+
+        if not self.current_tok.matches(TokenType.KEYWORD, "if"):
+            return res.failure(
+                SyntaxError(
+                    self.current_tok.pos_start,
+                    self.current_tok.pos_end,
+                    f"Expected 'if'",
+                )
+            )
+
+        res.register_advancement()
+        self.advance()
+
+        condition = res.register(self.expr())
+        if res.error:
+            return res
+
+        if not self.current_tok.matches(TokenType.KEYWORD, ":"):
+            return res.failure(
+                SyntaxError(
+                    self.current_tok.pos_start,
+                    self.current_tok.pos_end,
+                    f"Expected ':'",
+                )
+            )
+
+        res.register_advancement()
+        self.advance()
+
+        expr = res.register(self.expr())
+        if res.error:
+            return res
+        cases.append((condition, expr))
+
+        while self.current_tok.matches(TokenType, "elif"):
+            res.register_advancement()
+            self.advance()
+
+            condition = res.register(self.expr())
+            if res.error:
+                return res
+
+            if not self.current_tok.matches(TokenType.KEYWORD, ":"):
+                return res.failure(
+                    SyntaxError(
+                        self.current_tok.pos_start,
+                        self.current_tok.pos_end,
+                        f"Expected ':'",
+                    )
+                )
+
+            res.register_advancement()
+            self.advance()
+
+            expr = res.register(self.expr())
+            if res.error:
+                return res
+            cases.append((condition, expr))
+
+        if self.current_tok.matches(TokenType.KEYWORD, "else"):
+            res.register_advancement()
+            self.advance()
+
+            else_case = res.register(self.expr())
+            if res.error:
+                return res
+
+        return res.success(IfNode(cases, else_case))
+
     def atom(self):
+        """
+        : INT|FLOAT|IDENTIFIER
+        : LPAREN expr RPAREN
+        : if-expr
+        """
         res = ParseResult()
         tok = self.current_tok
 
@@ -75,6 +153,12 @@ class Parser:
                     )
                 )
 
+        elif tok.matches(TokenType.KEYWORD, "if"):
+            if_expr = res.register(self.if_expr())
+            if res.error:
+                return res
+            return res.success(if_expr)
+
         return res.failure(
             SyntaxError(
                 tok.pos_start,
@@ -84,11 +168,15 @@ class Parser:
         )
 
     def power(self):
+        """
+        : atom (POWER factor)*
+        """
         return self.bin_op(self.atom, (TokenType.POWER,), self.factor)
 
     def factor(self):
         """
-        Looks for int, float, or number, returns ParseResult(NumberNode)
+        : (PLUS|MINUS) factor
+        : power
         """
         res = ParseResult()
         tok = self.current_tok
@@ -105,14 +193,21 @@ class Parser:
 
     def term(self):
         """
-        Looks for mul or div, repeats until no more are found, returns BinOpNode
+        : factor ((MUL | DIV) factor)*
         """
         return self.bin_op(self.factor, (TokenType.MUL, TokenType.DIV))
 
     def arith_expr(self):
+        """
+        term ((PLUS|MINUS) term)*
+        """
         return self.bin_op(self.term, (TokenType.PLUS, TokenType.MINUS))
 
     def comp_expr(self):
+        """
+        : NOT comp_expr
+        : arith-expr ((EE|LT|GT|LTE|GTE) arith-expr)*
+        """
         res = ParseResult()
 
         if self.current_tok.matches(TokenType.KEYWORD, "not"):
@@ -144,7 +239,7 @@ class Parser:
                 SyntaxError(
                     self.current_tok.pos_start,
                     self.current_tok.pos_end,
-                    "Expected int, float, identifier, '+', '-','(', 'not",
+                    "Expected int, float, identifier, '+', '-', '(', or 'not",
                 )
             )
 
@@ -152,7 +247,8 @@ class Parser:
 
     def expr(self):
         """
-        Looks for plus or minus, repeats until no more are found, returns BinOpNode
+        : KEYWORD:TYPE IDENTIFIER EQ expr
+        : comp-expr ((KEYWORD:and|KEYWORD:or) comp-expr)*
         """
         res = ParseResult()
 
@@ -201,7 +297,7 @@ class Parser:
                 SyntaxError(
                     self.current_tok.pos_start,
                     self.current_tok.pos_end,
-                    "Expected declaration, int, float, identifier, '+', '-' or '('",
+                    "Expected expression",
                 )
             )
 
@@ -230,4 +326,4 @@ class Parser:
                 return res
             left = BinOpNode(left, op_tok, right)
 
-        return res.success(left)  # ParseResult(BinOpNode)
+        return res.success(left)

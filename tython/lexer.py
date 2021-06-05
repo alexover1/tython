@@ -11,6 +11,7 @@ WHITESPACE = " \n\t"
 DIGITS = "0123456789"
 LETTERS = string.ascii_letters
 LETTERS_DIGITS = LETTERS + DIGITS
+SYMBOLS = ":;"
 
 
 class Lexer:
@@ -35,7 +36,7 @@ class Lexer:
                 self.advance()
             elif self.current_char in DIGITS:
                 tokens.append(self.generate_number())
-            elif self.current_char in LETTERS:
+            elif self.current_char in LETTERS + SYMBOLS:
                 tokens.append(self.generate_identifier())
             elif self.current_char == "+":
                 tokens.append(Token(TokenType.PLUS, pos_start=self.pos))
@@ -103,7 +104,10 @@ class Lexer:
         id_str = ""
         pos_start = self.pos.copy()
 
-        while self.current_char != None and self.current_char in LETTERS_DIGITS + "_":
+        while (
+            self.current_char != None
+            and self.current_char in LETTERS_DIGITS + "_" + SYMBOLS
+        ):
             id_str += self.current_char
             self.advance()
 

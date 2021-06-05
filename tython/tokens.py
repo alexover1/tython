@@ -31,7 +31,7 @@ class TokenType(Enum):
     EOF = "EOF"
 
 
-KEYWORDS = ["and", "or", "not"]
+KEYWORDS = ["and", "or", "not", "if", ":", ";", "elif", "else"]
 TYPES = [Types.Int.value, Types.Float.value, Types.String.value]
 
 
