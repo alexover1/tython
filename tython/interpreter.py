@@ -9,6 +9,7 @@ from tython.types.Number import Number
 from tython.types.Int import Int
 from tython.types.Float import Float
 from tython.types.String import String
+from tython.types.List import List
 from tython.types.Function import Function
 from tython.runtime.result import RuntimeResult
 from tython.tokens import TokenType
@@ -59,6 +60,19 @@ class Interpreter:
             String(node.tok.value)
             .set_context(context)
             .set_pos(node.pos_start, node.pos_end)
+        )
+
+    def visit_ListNode(self, node, context):
+        res = RuntimeResult()
+        elements = []
+
+        for element_node in node.element_nodes:
+            elements.append(res.register(self.visit(element_node, context)))
+            if res.error:
+                return res
+
+        return res.success(
+            List(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
         )
 
     def visit_BinOpNode(self, node, context):
@@ -187,6 +201,7 @@ class Interpreter:
 
     def visit_ForNode(self, node, context):
         res = RuntimeResult()
+        elements = []
 
         start_value = res.register(self.visit(node.start_value_node, context))
         if res.error:
@@ -201,7 +216,7 @@ class Interpreter:
             if res.error:
                 return res
         else:
-            step_value = Number(1)
+            step_value = Int(1)
 
         i = start_value.value
 
@@ -211,14 +226,16 @@ class Interpreter:
             condition = lambda: i > end_value.value
 
         while condition():
-            context.symbol_table.set(node.var_name_tok.value, Number(i))
+            context.symbol_table.set(node.var_name_tok.value, Int(i))
             i += step_value.value
 
-            res.register(self.visit(node.body_node, context))
+            elements.append(res.register(self.visit(node.body_node, context)))
             if res.error:
                 return res
 
-        return res.success(None)
+        return res.success(
+            List(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
+        )
 
     def visit_WhileNode(self, node, context):
         res = RuntimeResult()

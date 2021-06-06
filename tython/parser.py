@@ -282,29 +282,6 @@ class Parser:
         res = ParseResult()
         tok = self.current_tok
 
-        # if tok.type in (
-        #     TokenType.INT,
-        #     TokenType.FLOAT,
-        #     TokenType.NUMBER,
-        # ):
-        #     res.register_advancement()
-        #     self.advance()
-        #     if self.var_type:
-        #         if self.var_type == TokenType.INT.name.lower():
-        #             return res.success(IntNode(tok))
-        #         elif self.var_type == TokenType.FLOAT.name.lower():
-        #             return res.success(FloatNode(tok))
-        #         else:
-        #             return res.success(AnyNode(tok))
-        #     else:
-        #         print("no var type")
-        #         if tok.type == TokenType.INT:
-        #             return res.success(IntNode(tok))
-        #         elif tok.type == TokenType.FLOAT:
-        #             return res.success(FloatNode(tok))
-
-        #     return res.success(NumberNode(tok))
-
         if tok.type == TokenType.INT:
             res.register_advancement()
             self.advance()
@@ -343,6 +320,12 @@ class Parser:
                         "Expected ')'",
                     )
                 )
+
+        elif tok.type == TokenType.LSQUARE:
+            list_expr = res.register(self.list_expr())
+            if res.error:
+                return res
+            return res.success(list_expr)
 
         elif tok.matches(TokenType.KEYWORD, "if"):
             if_expr = res.register(self.if_expr())
@@ -573,6 +556,59 @@ class Parser:
             return res
 
         return res.success(WhileNode(condition, body))
+
+    def list_expr(self):
+        res = ParseResult()
+        element_nodes = []
+        pos_start = self.current_tok.pos_start.copy()
+
+        if self.current_tok.type != TokenType.LSQUARE:
+            return res.failure(
+                SyntaxError(
+                    self.current_tok.pos_start, self.current_tok.pos_end, "Expected '['"
+                )
+            )
+
+        res.register_advancement()
+        self.advance()
+
+        if self.current_tok.type == TokenType.RSQUARE:
+            res.register_advancement()
+            self.advance()
+        else:
+            element_nodes.append(res.register(self.expr()))
+            if res.error:
+                return res.failure(
+                    SyntaxError(
+                        self.current_tok.pos_start,
+                        self.current_tok.pos_end,
+                        "Expected expression or ']'",
+                    )
+                )
+
+            while self.current_tok.type == TokenType.COMMA:
+                res.register_advancement()
+                self.advance()
+
+                element_nodes.append(res.register(self.expr()))
+                if res.error:
+                    return res
+
+            if self.current_tok.type != TokenType.RSQUARE:
+                return res.failure(
+                    SyntaxError(
+                        self.current_tok.pos_start,
+                        self.current_tok.pos_end,
+                        f"Expected ',' or ']'",
+                    )
+                )
+
+            res.register_advancement()
+            self.advance()
+
+        return res.success(
+            ListNode(element_nodes, pos_start, self.current_tok.pos_end.copy())
+        )
 
     def func_def(self):
         res = ParseResult()

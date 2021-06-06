@@ -10,6 +10,7 @@ class Types(Enum):
     Number = "num"
     Int = "int"
     Float = "float"
+    List = "list"
     Function = "function"
     String = "str"
 

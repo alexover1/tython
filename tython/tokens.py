@@ -13,6 +13,8 @@ class TokenType(Enum):
     POWER = "POWER"
     LPAREN = "LPAREN"
     RPAREN = "RPAREN"
+    LSQUARE = "LSQUARE"
+    RSQUARE = "RSQUARE"
     KEYWORD = "KEYWORD"
     TYPE = "TYPE"
     IDENTIFIER = "IDENTIFIER"

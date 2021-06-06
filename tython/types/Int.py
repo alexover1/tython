@@ -5,10 +5,6 @@ from tython.errors import TypeError
 
 
 class Int(Number):
-    """
-    Defines the Integer class, which is a Int with no decimal places
-    """
-
     def __init__(self, value):
         super().__init__(value)
         self.type = Types.Int
@@ -35,7 +31,7 @@ class Int(Number):
             return Int(self.value - other.value).set_context(self.context), None
         else:
             return None, TypeError(
-                self.pos_start, other.pos_end, "Cannot subtract non Int from Int"
+                self.pos_start, other.pos_end, "Cannot subtract non <Int> from <Int>"
             )
 
     def multiply(self, other):
@@ -43,7 +39,7 @@ class Int(Number):
             return Int(self.value * other.value).set_context(self.context), None
         else:
             return None, TypeError(
-                self.pos_start, other.pos_end, "Cannot multiply non Int and Int"
+                self.pos_start, other.pos_end, "Cannot multiply <Int> by non <Int>"
             )
 
     def divide(self, other):
@@ -58,7 +54,7 @@ class Int(Number):
             return Int(self.value / other.value).set_context(self.context), None
         else:
             return None, TypeError(
-                self.pos_start, other.pos_end, "Cannot divide Int by non Int"
+                self.pos_start, other.pos_end, "Cannot divide <Int> by non <Int>"
             )
 
     def power(self, other):

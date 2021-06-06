@@ -21,6 +21,11 @@ class NumberNode:
         return f"{self.tok}"
 
 
+class AnyNode(NumberNode):
+    def __init__(self, tok, var_type):
+        super().__init__(tok, var_type)
+
+
 class IntNode(NumberNode):
     """
     Defines a number node
@@ -51,9 +56,12 @@ class StringNode(NumberNode):
         super().__init__(tok, var_type)
 
 
-class AnyNode(NumberNode):
-    def __init__(self, tok, var_type):
-        super().__init__(tok, var_type)
+class ListNode:
+    def __init__(self, element_nodes, pos_start, pos_end):
+        self.element_nodes = element_nodes
+
+        self.pos_start = pos_start
+        self.pos_end = pos_end
 
 
 class BinOpNode:
