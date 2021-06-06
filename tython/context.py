@@ -9,3 +9,33 @@ class Context:
         self.parent = parent
         self.parent_entry_pos = parent_entry_pos
         self.symbol_table = None
+
+
+############################################
+# SYMBOL TABLE
+############################################
+
+
+class SymbolTable:
+    """
+    Stores all variables that have been assigned
+    """
+
+    def __init__(self, parent=None):
+        self.symbols = {}
+        self.parent = parent
+
+    def __repr__(self) -> str:
+        return f"{self.symbols}"
+
+    def get(self, name):
+        value = self.symbols.get(name, None)
+        if value == None and self.parent:
+            return self.parent.get(name)
+        return value
+
+    def set(self, name, value):
+        self.symbols[name] = value
+
+    def remove(self, name):
+        del self.symbols[name]

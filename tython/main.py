@@ -2,16 +2,17 @@
 # RUN
 ############################################
 
-from tython.runtime.types import Number
-from .lexer import Lexer
-from .parser.parser import Parser
-from .context import Context
-from .interpreter import Interpreter, SymbolTable
+from tython.types.Null import Null
+from tython.types.Boolean import Boolean
+from tython.lexer import Lexer
+from tython.parser import Parser
+from tython.context import Context, SymbolTable
+from tython.interpreter import Interpreter
 
 global_symbol_table = SymbolTable()
-global_symbol_table.set("null", Number(0))
-global_symbol_table.set("true", Number(1))
-global_symbol_table.set("false", Number(0))
+global_symbol_table.set("null", Null())
+global_symbol_table.set("true", Boolean(1))
+global_symbol_table.set("false", Boolean(0))
 
 
 def run(fn, text):

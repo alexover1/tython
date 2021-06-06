@@ -1,42 +1,24 @@
-from dataclasses import dataclass
-from enum import Enum
-
-from .errors import RuntimeError, TypeError
+from tython.types.base import Value, Types
 
 
-class Types(Enum):
-    Number = "number"
-    Int = "int"
-    Float = "float"
-    String = "str"
+class Number(Value):
+    """
+    Either an int or a float
+    """
 
-
-@dataclass
-class Number:
-    def __init__(self, value, type=Types.Number.value):
+    def __init__(self, value):
+        super().__init__()
         self.value = value
-        self.error = None
-        self.type = type
-        self.set_pos()
-        self.set_context()
+        self.type = Types.Number
+
+    def __repr__(self) -> str:
+        return f"{self.value} <{self.type.name}>"
 
     def copy(self):
         copy = Number(self.value)
         copy.set_pos(self.pos_start, self.pos_end)
         copy.set_context(self.context)
         return copy
-
-    def __repr__(self) -> str:
-        return f"{self.value} {self.type}"
-
-    def set_pos(self, pos_start=None, pos_end=None):
-        self.pos_start = pos_start
-        self.pos_end = pos_end
-        return self
-
-    def set_context(self, context=None):
-        self.context = context
-        return self
 
     def add(self, other):
         if isinstance(other, Number):
@@ -140,42 +122,3 @@ class Number:
 
     def is_true(self):
         return self.value != 0
-
-
-@dataclass
-class Int(Number):
-    def __init__(self, value):
-        super().__init__(value, type=Types.Int.value)
-
-    def __repr__(self) -> str:
-        return f"{self.value} {self.type}"
-
-    def copy(self):
-        copy = Int(self.value)
-        copy.set_pos(self.pos_start, self.pos_end)
-        copy.set_context(self.context)
-        return copy
-
-
-@dataclass
-class Float(Number):
-    def __init__(self, value):
-        super().__init__(value, type=Types.Float.value)
-
-    def __repr__(self) -> str:
-        return f"{self.value} {self.type}"
-
-    def copy(self):
-        copy = Float(self.value)
-        copy.set_pos(self.pos_start, self.pos_end)
-        copy.set_context(self.context)
-        return copy
-
-
-@dataclass
-class String:
-    value: str
-    type: Types = Types.String
-
-    def __repr__(self) -> str:
-        return f"{self.value}"
