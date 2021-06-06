@@ -35,9 +35,11 @@ class Lexer:
             if self.current_char in WHITESPACE:
                 self.advance()
             elif self.current_char in DIGITS:
-                tokens.append(self.generate_number())
+                tokens.append(self.make_number())
             elif self.current_char in LETTERS + SYMBOLS:
-                tokens.append(self.generate_identifier())
+                tokens.append(self.make_identifier())
+            elif self.current_char == '"':
+                tokens.append(self.make_string())
             elif self.current_char == "+":
                 tokens.append(Token(TokenType.PLUS, pos_start=self.pos))
                 self.advance()
@@ -81,7 +83,7 @@ class Lexer:
         tokens.append(Token(TokenType.EOF, pos_start=self.pos))
         return tokens, None
 
-    def generate_number(self):
+    def make_number(self):
         num_str = ""
         dot_count = 0
         pos_start = self.pos.copy()
@@ -102,7 +104,7 @@ class Lexer:
         else:
             return Token(TokenType.FLOAT, float(num_str), pos_start, self.pos)
 
-    def generate_identifier(self):
+    def make_identifier(self):
         id_str = ""
         pos_start = self.pos.copy()
 
@@ -121,6 +123,31 @@ class Lexer:
             tok_type = TokenType.IDENTIFIER
 
         return Token(tok_type, id_str, pos_start, self.pos)
+
+    def make_string(self):
+        string = ""
+        pos_start = self.pos.copy()
+        escape_character = False
+        self.advance()
+
+        escape_characters = {"n": "\n", "t": "\t"}
+
+        while self.current_char != None and (
+            self.current_char != '"' or escape_character
+        ):
+            if escape_character:
+                string += escape_characters.get(self.current_char, self.current_char)
+
+            else:
+                if self.current_char == "\\":
+                    escape_character = True
+                else:
+                    string += self.current_char
+            self.advance()
+            escape_character = False
+
+        self.advance()
+        return Token(TokenType.STRING, string, pos_start, self.pos)
 
     def make_not_equals(self):
         pos_start = self.pos.copy()

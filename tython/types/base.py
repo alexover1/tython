@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from enum import Enum
 
 
@@ -13,7 +12,6 @@ class Types(Enum):
     String = "str"
 
 
-@dataclass
 class Value:
     def __init__(self):
         self.set_pos()

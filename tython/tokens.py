@@ -3,7 +3,6 @@
 ############################################
 
 from enum import Enum
-from dataclasses import dataclass
 from tython.types.base import Types
 
 
@@ -11,6 +10,7 @@ class TokenType(Enum):
     NUMBER = "NUMBER"
     INT = "INT"
     FLOAT = "FLOAT"
+    STRING = "STRING"
     PLUS = "PLUS"
     MINUS = "MINUS"
     MUL = "MUL"
@@ -52,7 +52,6 @@ KEYWORDS = [
 TYPES = ["var", Types.Int.value, Types.Float.value, Types.String.value]
 
 
-@dataclass
 class Token:
     def __init__(
         self, type_: TokenType, value=None, pos_start=None, pos_end=None

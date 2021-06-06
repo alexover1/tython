@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from tython.types.base import Value, Types
 
 

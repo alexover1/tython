@@ -9,6 +9,7 @@ from tython.types.Float import Float
 from tython.types.Function import Function
 from tython.runtime.result import RuntimeResult
 from tython.tokens import TokenType
+from tython.errors import RuntimeError, TypeError
 
 
 class Interpreter:

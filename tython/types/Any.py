@@ -1,6 +1,7 @@
 from tython.types.base import Value, Types
 from tython.types.Number import Number
 from tython.types.Boolean import Boolean
+from tython.errors import RuntimeError
 
 
 class Any(Value):

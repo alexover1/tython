@@ -1,4 +1,5 @@
 from tython.types.base import Value, Types
+from tython.errors import RuntimeError
 
 
 class Number(Value):
