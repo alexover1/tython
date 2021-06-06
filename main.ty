@@ -1,0 +1,15 @@
+print("start")
+
+def add(a, b)
+    var c = a + b
+
+    def subtract(a, b) 
+        return a - b
+    stop
+    
+    var d = subtract(a, b)
+
+    return c * d 
+stop
+
+add(3, 8)

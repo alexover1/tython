@@ -18,6 +18,8 @@ class TokenType(Enum):
     KEYWORD = "KEYWORD"
     TYPE = "TYPE"
     IDENTIFIER = "IDENTIFIER"
+    DOT = "DOT"
+    METHOD = "METHOD"
     EQ = "EQ"
     EE = "EE"
     NE = "NE"
@@ -27,6 +29,7 @@ class TokenType(Enum):
     GTE = "GTE"
     COMMA = "COMMA"
     ARROW = "ARROW"
+    NEWLINE = "NEWLINE"
     EOF = "EOF"
 
 

@@ -5,6 +5,7 @@
 from tython.types.base import Types
 from tython.nodes import *
 from tython.types.Any import Any
+from tython.types.Null import Null
 from tython.types.Number import Number
 from tython.types.Int import Int
 from tython.types.Float import Float
@@ -151,7 +152,7 @@ class Interpreter:
                 )
             )
 
-        value = value.copy().set_pos(node.pos_start, node.pos_end)
+        value = value.copy().set_pos(node.pos_start, node.pos_end).set_context(context)
         return res.success(value)
 
     def visit_VarAssignNode(self, node, context):
@@ -170,7 +171,7 @@ class Interpreter:
                     TypeError(
                         node.var_name_tok.pos_start,
                         node.var_name_tok.pos_end,
-                        f"Cannot assign variable '{var_name}' <{node.var_type.name}> to variable of type <{value.type.name}>",
+                        f"Cannot assign '{var_name}' <{node.var_type.name}> to variable of type <{value.type.name}>",
                     )
                 )
 
@@ -180,7 +181,7 @@ class Interpreter:
     def visit_IfNode(self, node, context):
         res = RuntimeResult()
 
-        for condition, expr in node.cases:
+        for condition, expr, should_return_null in node.cases:
             condition_value = res.register(self.visit(condition, context))
             if res.error:
                 return res
@@ -189,15 +190,16 @@ class Interpreter:
                 expr_value = res.register(self.visit(expr, context))
                 if res.error:
                     return res
-                return res.success(expr_value)
+                return res.success(Null() if should_return_null else expr_value)
 
         if node.else_case:
-            else_value = res.register(self.visit(node.else_case, context))
+            expr, should_return_null = node.else_case
+            else_value = res.register(self.visit(expr, context))
             if res.error:
                 return res
-            return res.success(else_value)
+            return res.success(Null() if should_return_null else else_value)
 
-        return res.success(None)
+        return res.success(Null())
 
     def visit_ForNode(self, node, context):
         res = RuntimeResult()
@@ -234,11 +236,16 @@ class Interpreter:
                 return res
 
         return res.success(
-            List(elements).set_context(context).set_pos(node.pos_start, node.pos_end)
+            Null()
+            if node.should_return_null
+            else List(elements)
+            .set_context(context)
+            .set_pos(node.pos_start, node.pos_end)
         )
 
     def visit_WhileNode(self, node, context):
         res = RuntimeResult()
+        elements = []
 
         while True:
             condition = res.register(self.visit(node.condition_node, context))
@@ -248,11 +255,17 @@ class Interpreter:
             if not condition.is_true():
                 break
 
-            res.register(self.visit(node.body_node, context))
+            elements.append(res.register(self.visit(node.body_node, context)))
             if res.error:
                 return res
 
-        return res.success(None)
+        return res.success(
+            Null()
+            if node.should_return_null
+            else List(elements)
+            .set_context(context)
+            .set_pos(node.pos_start, node.pos_end)
+        )
 
     def visit_FuncDefNode(self, node, context):
         res = RuntimeResult()
@@ -261,7 +274,9 @@ class Interpreter:
         body_node = node.body_node
         arg_names = [arg_name.value for arg_name in node.arg_name_toks]
         func_value = (
-            Function(func_name, body_node, arg_names, Interpreter)
+            Function(
+                func_name, body_node, arg_names, Interpreter, node.should_return_null
+            )
             .set_context(context)
             .set_pos(node.pos_start, node.pos_end)
         )
@@ -288,6 +303,11 @@ class Interpreter:
         return_value = res.register(value_to_call.execute(args))
         if res.error:
             return res
+        return_value = (
+            return_value.copy()
+            .set_pos(node.pos_start, node.pos_end)
+            .set_context(context)
+        )
         return res.success(return_value)
 
 

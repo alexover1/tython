@@ -1,24 +1,17 @@
 from tython.types.base import Value, Types
 
 
-class Boolean(Value):
+class Type(Value):
     def __init__(self, value):
         super().__init__()
         self.value = value
-        self.type = Types.Boolean
+        self.type = Types.Type
 
     def __repr__(self) -> str:
-        return (
-            f"True <{self.type.name}>"
-            if self.value == 1
-            else f"False <{self.type.name}>"
-        )
+        return f"<{self.value.name}>"
 
     def copy(self):
-        copy = Boolean(self.value)
+        copy = Type(self.value)
         copy.set_pos(self.pos_start, self.pos_end)
         copy.set_context(self.context)
         return copy
-
-    def is_true(self):
-        return self.value != 0

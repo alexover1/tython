@@ -1,9 +1,10 @@
 from enum import Enum
-from tython.runtime.result import RuntimeResult
 from tython.errors import RuntimeError
 
 
 class Types(Enum):
+    Type = "type"
+    SystemFunction = "systemfunction"
     Any = "var"
     Null = "null"
     Boolean = "bool"

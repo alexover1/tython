@@ -4,15 +4,23 @@
 
 from tython.types.Null import Null
 from tython.types.Boolean import Boolean
-from tython.lexer import Lexer
+from tython.types.Function import SystemFunction
+from tython.lexer import Lexer, SYMBOLS
 from tython.parser import Parser
 from tython.context import Context, SymbolTable
 from tython.interpreter import Interpreter
 
+
 global_symbol_table = SymbolTable()
-global_symbol_table.set("null", Null())
-global_symbol_table.set("true", Boolean(1))
-global_symbol_table.set("false", Boolean(0))
+global_symbol_table.set("Null", Null())
+global_symbol_table.set("True", Boolean(1))
+global_symbol_table.set("False", Boolean(0))
+global_symbol_table.set("print", SystemFunction("print"))
+global_symbol_table.set("return", SystemFunction("return"))
+global_symbol_table.set("input", SystemFunction("input"))
+global_symbol_table.set("input_int", SystemFunction("input_int"))
+global_symbol_table.set("clear", SystemFunction("clear"))
+global_symbol_table.set("type", SystemFunction("type"))
 
 
 def run(fn, text):
@@ -22,6 +30,8 @@ def run(fn, text):
 
     if error:
         return None, error
+
+    # print(tokens)
 
     # Generate AST (Abstract Syntax Tree)
     parser = Parser(tokens)

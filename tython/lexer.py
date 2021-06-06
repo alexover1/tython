@@ -8,11 +8,11 @@ from tython.types.base import Types
 from tython.errors import *
 import string
 
-WHITESPACE = " \n\t"
+WHITESPACE = " \t"
 DIGITS = "0123456789"
 LETTERS = string.ascii_letters
 LETTERS_DIGITS = LETTERS + DIGITS
-SYMBOLS = ":;"
+SYMBOLS = ".:;"
 
 KEYWORDS = [
     "and",
@@ -28,6 +28,7 @@ KEYWORDS = [
     "step",
     "while",
     "def",
+    "stop",
 ]
 
 TYPES = [
@@ -59,10 +60,14 @@ class Lexer:
         while self.current_char != None:
             if self.current_char in WHITESPACE:
                 self.advance()
+            elif self.current_char in ";\n":
+                tokens.append(Token(TokenType.NEWLINE, pos_start=self.pos))
+                self.advance()
             elif self.current_char in DIGITS:
                 tokens.append(self.make_number())
             elif self.current_char in LETTERS + SYMBOLS:
-                tokens.append(self.make_identifier())
+                for token in self.make_identifier():
+                    tokens.append(token)
             elif self.current_char == '"':
                 tokens.append(self.make_string())
             elif self.current_char == "+":
@@ -137,12 +142,24 @@ class Lexer:
 
     def make_identifier(self):
         id_str = ""
+        method_str = ""
         pos_start = self.pos.copy()
+        dot_start = None
+        method_start = None
+        tokens = []
 
         while (
             self.current_char != None
             and self.current_char in LETTERS_DIGITS + "_" + SYMBOLS
         ):
+            if self.current_char == ".":
+                dot_start = self.pos.copy()
+                self.advance()
+                method_start = self.pos.copy()
+                while self.current_char != None:
+                    method_str += self.current_char
+                    self.advance()
+                break
             id_str += self.current_char
             self.advance()
 
@@ -153,7 +170,20 @@ class Lexer:
         else:
             tok_type = TokenType.IDENTIFIER
 
-        return Token(tok_type, id_str, pos_start, self.pos)
+        if dot_start:
+            tokens.append(Token(tok_type, id_str, pos_start, dot_start))
+            tokens.append(
+                Token(TokenType.DOT, pos_start=dot_start, pos_end=method_start)
+            )
+            if method_str:
+
+                tokens.append(
+                    Token(TokenType.METHOD, method_str, method_start, self.pos)
+                )
+
+        if len(tokens) > 0:
+            return tokens
+        return [Token(tok_type, id_str, pos_start, self.pos)]
 
     def make_string(self):
         string = ""
