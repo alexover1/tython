@@ -156,7 +156,7 @@ class Interpreter:
                     TypeError(
                         node.var_name_tok.pos_start,
                         node.var_name_tok.pos_end,
-                        f"Cannot assign variable {var_name} <{value.type.name}> to non {value.type.name} value",
+                        f"Cannot assign variable '{var_name}' <{node.var_type.name}> to variable of type <{value.type.name}>",
                     )
                 )
 
