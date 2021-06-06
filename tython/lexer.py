@@ -2,9 +2,10 @@
 # LEXER
 ############################################
 
-from .position import Position
-from .tokens import Token, TokenType, KEYWORDS, TYPES
-from .errors import *
+from tython.position import Position
+from tython.tokens import Token, TokenType
+from tython.types.base import Types
+from tython.errors import *
 import string
 
 WHITESPACE = " \n\t"
@@ -12,6 +13,30 @@ DIGITS = "0123456789"
 LETTERS = string.ascii_letters
 LETTERS_DIGITS = LETTERS + DIGITS
 SYMBOLS = ":;"
+
+KEYWORDS = [
+    "and",
+    "or",
+    "not",
+    "if",
+    ":",
+    ";",
+    "elif",
+    "else",
+    "for",
+    "to",
+    "step",
+    "while",
+    "def",
+]
+
+TYPES = [
+    Types.Any.value,
+    Types.Number.value,
+    Types.Int.value,
+    Types.Float.value,
+    Types.String.value,
+]
 
 
 class Lexer:

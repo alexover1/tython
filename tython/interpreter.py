@@ -2,10 +2,13 @@
 # INTERPRETER
 ############################################
 
+from tython.types.base import Types
+from tython.nodes import *
 from tython.types.Any import Any
 from tython.types.Number import Number
 from tython.types.Int import Int
 from tython.types.Float import Float
+from tython.types.String import String
 from tython.types.Function import Function
 from tython.runtime.result import RuntimeResult
 from tython.tokens import TokenType
@@ -51,6 +54,13 @@ class Interpreter:
             .set_pos(node.pos_start, node.pos_end)
         )
 
+    def visit_StringNode(self, node, context):
+        return RuntimeResult().success(
+            String(node.tok.value)
+            .set_context(context)
+            .set_pos(node.pos_start, node.pos_end)
+        )
+
     def visit_BinOpNode(self, node, context):
         res = RuntimeResult()
 
@@ -85,6 +95,8 @@ class Interpreter:
             result, error = left.compare_gte(right)
         elif node.op_tok.matches(TokenType.KEYWORD, "and"):
             result, error = left.and_(right)
+        elif node.op_tok.matches(TokenType.KEYWORD, "not"):
+            result, error = left.not_(right)
         elif node.op_tok.matches(TokenType.KEYWORD, "or"):
             result, error = left.or_(right)
         else:
@@ -105,6 +117,8 @@ class Interpreter:
 
         if node.op_tok.type == TokenType.MINUS:
             number, error = number.multiply(Number(-1))
+        elif node.op_tok.matches(TokenType.KEYWORD, "not"):
+            number, error = number.not_()
 
         if error:
             return res.failure(error)
@@ -130,32 +144,21 @@ class Interpreter:
         res = RuntimeResult()
         var_name = node.var_name_tok.value
 
-        try:
-            value = node.value_node.tok.value
-            if node.type == TokenType.INT.value.lower() and not isinstance(value, int):
-                return res.failure(
-                    TypeError(
-                        node.var_name_tok.pos_start,
-                        node.var_name_tok.pos_end,
-                        f"Cannot assign variable {var_name} (of type {node.type}) to non {node.type} value",
-                    )
-                )
-            elif node.type == TokenType.FLOAT.value.lower() and not isinstance(
-                value, float
+        value = res.register(self.visit(node.value_node, context))
+        if res.error:
+            return res
+
+        if node.var_type != value.type and node.var_type != Types.Any:
+            if not (
+                node.var_type == Types.Number and value.type in (Types.Int, Types.Float)
             ):
                 return res.failure(
                     TypeError(
                         node.var_name_tok.pos_start,
                         node.var_name_tok.pos_end,
-                        f"Cannot assign variable {var_name} (of type {node.type}) to non {node.type} value",
+                        f"Cannot assign variable {var_name} <{value.type.name}> to non {value.type.name} value",
                     )
                 )
-        except:
-            pass
-
-        value = res.register(self.visit(node.value_node, context))
-        if res.error:
-            return res
 
         context.symbol_table.set(var_name, value)
         return res.success(value)

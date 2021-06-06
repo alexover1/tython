@@ -1,9 +1,4 @@
-############################################
-# TOKENS
-############################################
-
 from enum import Enum
-from tython.types.base import Types
 
 
 class TokenType(Enum):
@@ -31,25 +26,6 @@ class TokenType(Enum):
     COMMA = "COMMA"
     ARROW = "ARROW"
     EOF = "EOF"
-
-
-KEYWORDS = [
-    "and",
-    "or",
-    "not",
-    "if",
-    ":",
-    ";",
-    "elif",
-    "else",
-    "for",
-    "to",
-    "step",
-    "while",
-    "def",
-]
-
-TYPES = ["var", Types.Int.value, Types.Float.value, Types.String.value]
 
 
 class Token:

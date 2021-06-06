@@ -1,3 +1,4 @@
+from tython.types.String import String
 from tython.tokens import Token, TokenType
 from tython.errors import SyntaxError
 from tython.types.base import Types
@@ -111,12 +112,16 @@ class Parser:
                     )
                 )
 
-            if not type.matches(TokenType.TYPE, "var"):
-                type_ = type.value
+            if type.matches(TokenType.TYPE, Types.Number.value):
+                self.var_type = Types.Number
+            elif type.matches(TokenType.TYPE, Types.Int.value):
+                self.var_type = Types.Int
+            elif type.matches(TokenType.TYPE, Types.Float.value):
+                self.var_type = Types.Float
+            elif type.matches(TokenType.TYPE, Types.String.value):
+                self.var_type = Types.String
             else:
-                type_ = Types.Any.value
-
-            self.var_type = type_
+                self.var_type = Types.Any
 
             res.register_advancement()
             self.advance()
@@ -124,7 +129,7 @@ class Parser:
             if res.error:
                 return res
 
-            return res.success(VarAssignNode(var_name, expr, type_))
+            return res.success(VarAssignNode(var_name, expr, self.var_type))
 
         node = res.register(
             self.bin_op(
@@ -270,30 +275,50 @@ class Parser:
 
     def atom(self):
         """
-        : INT|FLOAT|IDENTIFIER
+        : INT|FLOAT|STRING|IDENTIFIER
         : LPAREN expr RPAREN
         : if-expr
         """
         res = ParseResult()
         tok = self.current_tok
 
-        if tok.type in (TokenType.INT, TokenType.FLOAT, TokenType.NUMBER):
+        # if tok.type in (
+        #     TokenType.INT,
+        #     TokenType.FLOAT,
+        #     TokenType.NUMBER,
+        # ):
+        #     res.register_advancement()
+        #     self.advance()
+        #     if self.var_type:
+        #         if self.var_type == TokenType.INT.name.lower():
+        #             return res.success(IntNode(tok))
+        #         elif self.var_type == TokenType.FLOAT.name.lower():
+        #             return res.success(FloatNode(tok))
+        #         else:
+        #             return res.success(AnyNode(tok))
+        #     else:
+        #         print("no var type")
+        #         if tok.type == TokenType.INT:
+        #             return res.success(IntNode(tok))
+        #         elif tok.type == TokenType.FLOAT:
+        #             return res.success(FloatNode(tok))
+
+        #     return res.success(NumberNode(tok))
+
+        if tok.type == TokenType.INT:
             res.register_advancement()
             self.advance()
-            if self.var_type:
-                if self.var_type == TokenType.INT.value.lower():
-                    return res.success(IntNode(tok))
-                elif self.var_type == TokenType.FLOAT.value.lower():
-                    return res.success(FloatNode(tok))
-                else:
-                    return res.success(AnyNode(tok))
-            else:
-                if tok.type == TokenType.INT:
-                    return res.success(IntNode(tok))
-                elif tok.type == TokenType.FLOAT:
-                    return res.success(FloatNode(tok))
+            return res.success(IntNode(tok, self.var_type))
 
-            return res.success(NumberNode(tok))
+        elif tok.type == TokenType.FLOAT:
+            res.register_advancement()
+            self.advance()
+            return res.success(FloatNode(tok, self.var_type))
+
+        elif tok.type == TokenType.STRING:
+            res.register_advancement()
+            self.advance()
+            return res.success(StringNode(tok, self.var_type))
 
         elif tok.type == TokenType.IDENTIFIER:
             res.register_advancement()

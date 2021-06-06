@@ -1,11 +1,13 @@
 from enum import Enum
+from tython.runtime.result import RuntimeResult
+from tython.errors import RuntimeError
 
 
 class Types(Enum):
-    Any = "any"
+    Any = "var"
     Null = "null"
     Boolean = "bool"
-    Number = "number"
+    Number = "num"
     Int = "int"
     Float = "float"
     Function = "function"
@@ -81,5 +83,5 @@ class Value:
         if not other:
             other = self
         return RuntimeError(
-            self.pos_start, self.pos_end, "Illegal operation", self.context
+            self.pos_start, other.pos_end, "Illegal operation", self.context
         )

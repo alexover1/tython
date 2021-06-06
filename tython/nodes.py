@@ -10,8 +10,9 @@ class NumberNode:
         ex: NUMBER:2.3
     """
 
-    def __init__(self, tok):
+    def __init__(self, tok, var_type):
         self.tok = tok
+        self.var_type = var_type
 
         self.pos_start = tok.pos_start
         self.pos_end = tok.pos_start
@@ -26,8 +27,8 @@ class IntNode(NumberNode):
         ex: INT:5
     """
 
-    def __init__(self, tok):
-        super().__init__(tok)
+    def __init__(self, tok, var_type):
+        super().__init__(tok, var_type)
 
 
 class FloatNode(NumberNode):
@@ -36,13 +37,23 @@ class FloatNode(NumberNode):
         ex: FLOAT:2.3
     """
 
-    def __init__(self, tok):
-        super().__init__(tok)
+    def __init__(self, tok, var_type):
+        super().__init__(tok, var_type)
+
+
+class StringNode(NumberNode):
+    """
+    Defines a string node
+        ex: STRING:hey whats up
+    """
+
+    def __init__(self, tok, var_type):
+        super().__init__(tok, var_type)
 
 
 class AnyNode(NumberNode):
-    def __init__(self, tok):
-        super().__init__(tok)
+    def __init__(self, tok, var_type):
+        super().__init__(tok, var_type)
 
 
 class BinOpNode:
@@ -85,6 +96,7 @@ class VarAssignNode:
         self.var_name_tok = var_name_tok
         self.value_node = value_node
         self.type = type_
+        self.var_type = type_
 
         self.pos_start = self.var_name_tok.pos_start
         self.pos_end = self.value_node.pos_end
