@@ -1,15 +1,13 @@
-############################################
-# RUN
-############################################
-
-from tython.types.Null import Null
-from tython.types.Boolean import Boolean
-from tython.types.Function import SystemFunction
-from tython.lexer import Lexer, SYMBOLS
+from tython.types import Null, Boolean, SystemFunction
+from tython.lex import Lexer
 from tython.parser import Parser
 from tython.context import Context, SymbolTable
 from tython.interpreter import Interpreter
 
+
+############################################
+# GLOBAL SYMBOL TABLE
+############################################
 
 global_symbol_table = SymbolTable()
 global_symbol_table.set("Null", Null())
@@ -23,6 +21,11 @@ global_symbol_table.set("clear", SystemFunction("clear"))
 global_symbol_table.set("type", SystemFunction("type"))
 
 
+############################################
+# RUN
+############################################
+
+
 def run(fn, text):
     # Generate tokens
     lexer = Lexer(fn, text)
@@ -31,7 +34,7 @@ def run(fn, text):
     if error:
         return None, error
 
-    # print(tokens)
+    print(tokens)
 
     # Generate AST (Abstract Syntax Tree)
     parser = Parser(tokens)

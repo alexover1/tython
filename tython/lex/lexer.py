@@ -2,11 +2,14 @@
 # LEXER
 ############################################
 
-from tython.position import Position
-from tython.tokens import Token, TokenType
-from tython.types.base import Types
+from .position import Position
+from .token import Token
+from .token_type import TokenType
+from tython.types import Types
 from tython.errors import *
 import string
+
+from tython.lex import token_type
 
 WHITESPACE = " \t"
 DIGITS = "0123456789"
@@ -29,6 +32,9 @@ KEYWORDS = [
     "while",
     "def",
     "stop",
+    "return",
+    "continue",
+    "break",
 ]
 
 TYPES = [
@@ -66,8 +72,7 @@ class Lexer:
             elif self.current_char in DIGITS:
                 tokens.append(self.make_number())
             elif self.current_char in LETTERS + SYMBOLS:
-                for token in self.make_identifier():
-                    tokens.append(token)
+                tokens.append(self.make_identifier())
             elif self.current_char == '"':
                 tokens.append(self.make_string())
             elif self.current_char == "+":
@@ -125,7 +130,6 @@ class Lexer:
         pos_start = self.pos.copy()
 
         while self.current_char != None and self.current_char in DIGITS + ".":
-
             if self.current_char == ".":
                 if dot_count == 1:
                     break
@@ -142,24 +146,9 @@ class Lexer:
 
     def make_identifier(self):
         id_str = ""
-        method_str = ""
         pos_start = self.pos.copy()
-        dot_start = None
-        method_start = None
-        tokens = []
 
-        while (
-            self.current_char != None
-            and self.current_char in LETTERS_DIGITS + "_" + SYMBOLS
-        ):
-            if self.current_char == ".":
-                dot_start = self.pos.copy()
-                self.advance()
-                method_start = self.pos.copy()
-                while self.current_char != None:
-                    method_str += self.current_char
-                    self.advance()
-                break
+        while self.current_char != None and self.current_char in LETTERS_DIGITS + "_:":
             id_str += self.current_char
             self.advance()
 
@@ -170,20 +159,7 @@ class Lexer:
         else:
             tok_type = TokenType.IDENTIFIER
 
-        if dot_start:
-            tokens.append(Token(tok_type, id_str, pos_start, dot_start))
-            tokens.append(
-                Token(TokenType.DOT, pos_start=dot_start, pos_end=method_start)
-            )
-            if method_str:
-
-                tokens.append(
-                    Token(TokenType.METHOD, method_str, method_start, self.pos)
-                )
-
-        if len(tokens) > 0:
-            return tokens
-        return [Token(tok_type, id_str, pos_start, self.pos)]
+        return Token(tok_type, id_str, pos_start, self.pos)
 
     def make_string(self):
         string = ""
