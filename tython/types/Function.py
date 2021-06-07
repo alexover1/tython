@@ -1,13 +1,8 @@
-from tython.types.base import Value, Types
-from tython.types.Type import Type
-from tython.types.Boolean import Boolean
-from tython.types.Null import Null
-from tython.types.Int import Int
-from tython.types.Float import Float
-from tython.types.String import String
+from tython.types import *
 from tython.runtime.result import RuntimeResult
 from tython.context import Context, SymbolTable
 from tython.errors import RuntimeError
+import tython.main as main
 import os
 
 
@@ -143,6 +138,47 @@ class SystemFunction(BaseFunction):
 
     ############################################
 
+    def execute_run(self, exec_ctx):
+        fn = exec_ctx.symbol_table.get("fn")
+
+        if not isinstance(fn, String):
+            return RuntimeResult().failure(
+                RuntimeError(
+                    self.pos_start, self.pos_end, "File name must be a string", exec_ctx
+                )
+            )
+
+        fn = fn.value
+
+        try:
+            with open(fn, "r") as f:
+                script = f.read()
+        except Exception as e:
+            return RuntimeResult().failure(
+                RuntimeError(
+                    self.pos_start,
+                    self.pos_end,
+                    f'Failed to load script "{fn}"\n' + str(e),
+                    exec_ctx,
+                )
+            )
+
+        _, error = main.run(fn, script)
+
+        if error:
+            return RuntimeResult().failure(
+                RuntimeError(
+                    self.pos_start,
+                    self.pos_end,
+                    f'Failed to finish executing script "{fn}"\n' + f"{error}",
+                    exec_ctx,
+                )
+            )
+
+        return RuntimeResult().success(Null())
+
+    execute_run.arg_names = ["fn"]
+
     def execute_print(self, exec_ctx):
         print(str(exec_ctx.symbol_table.get("value")))
         return RuntimeResult().success(Null())
@@ -192,3 +228,20 @@ class SystemFunction(BaseFunction):
         return RuntimeResult().success(Type(type_.type))
 
     execute_type.arg_names = ["value"]
+
+    def execute_len(self, exec_ctx):
+        list_ = exec_ctx.symbol_table.get("list")
+
+        if not isinstance(list_, List):
+            return RuntimeResult().failure(
+                RuntimeError(
+                    self.pos_start,
+                    self.pos_end,
+                    "Argument must be a \033[34mList\033[0m",
+                    exec_ctx,
+                )
+            )
+
+        return RuntimeResult().success(Int(len(list_.elements)))
+
+    execute_len.arg_names = ["list"]

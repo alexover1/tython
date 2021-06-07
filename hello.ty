@@ -1,0 +1,12 @@
+def add(a, b) 
+    return a + b
+stop
+
+def test()
+    return "You are weird."
+stop
+
+int result = add(5, 11)
+
+print(result)
+print(test())

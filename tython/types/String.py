@@ -10,7 +10,7 @@ class String(Value):
         self.type = Types.String
 
     def __repr__(self) -> str:
-        return f'"{self.value}" <{self.type.name}>'
+        return f'\033[36m{self.type.name}\033[0m "{self.value}"'
 
     def copy(self):
         copy = String(self.value)

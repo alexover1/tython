@@ -8,4 +8,4 @@ from .Int import Int
 from .Float import Float
 from .String import String
 from .List import List
-from .Function import *
+from .Function import Function, SystemFunction

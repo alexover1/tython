@@ -7,7 +7,7 @@ class Null(Value):
         self.type = Types.Null
 
     def __repr__(self) -> str:
-        return self.type.name
+        return f"\033[34m{self.type.name}\033[0m"
 
     def copy(self):
         copy = Null()

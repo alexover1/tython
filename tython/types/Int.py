@@ -10,7 +10,7 @@ class Int(Number):
         self.type = Types.Int
 
     def __repr__(self) -> str:
-        return f"{self.value} \033[36m<{self.type.name}>\033[0m"
+        return f"\033[36m{self.type.name}\033[0m {self.value}"
 
     def copy(self):
         copy = Int(self.value)

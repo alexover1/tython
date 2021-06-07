@@ -13,12 +13,14 @@ global_symbol_table = SymbolTable()
 global_symbol_table.set("Null", Null())
 global_symbol_table.set("True", Boolean(1))
 global_symbol_table.set("False", Boolean(0))
+global_symbol_table.set("run", SystemFunction("run"))
 global_symbol_table.set("print", SystemFunction("print"))
 global_symbol_table.set("return", SystemFunction("return"))
 global_symbol_table.set("input", SystemFunction("input"))
 global_symbol_table.set("input_int", SystemFunction("input_int"))
 global_symbol_table.set("clear", SystemFunction("clear"))
 global_symbol_table.set("type", SystemFunction("type"))
+global_symbol_table.set("len", SystemFunction("len"))
 
 
 ############################################
@@ -34,7 +36,7 @@ def run(fn, text):
     if error:
         return None, error
 
-    print(tokens)
+    # print(tokens)
 
     # Generate AST (Abstract Syntax Tree)
     parser = Parser(tokens)

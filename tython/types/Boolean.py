@@ -8,11 +8,7 @@ class Boolean(Value):
         self.type = Types.Boolean
 
     def __repr__(self) -> str:
-        return (
-            f"True <{self.type.name}>"
-            if self.value == 1
-            else f"False <{self.type.name}>"
-        )
+        return "\033[34mTrue\033[0m" if self.value == 1 else "\033[34mFalse\033[0m"
 
     def copy(self):
         copy = Boolean(self.value)
