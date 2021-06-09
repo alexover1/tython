@@ -69,7 +69,7 @@ class Function(BaseFunction):
         self.should_auto_return = should_auto_return
 
     def __repr__(self) -> str:
-        return f"{self.name} <{self.type.name}>"
+        return f"\033[36mFunction\033[0m {self.name}"
 
     def copy(self):
         copy = Function(
@@ -109,7 +109,7 @@ class SystemFunction(BaseFunction):
         self.type = Types.SystemFunction
 
     def __repr__(self) -> str:
-        return f"{self.name} <System.Function>"
+        return f"\033[36mSystemFunction\033[0m {self.name}"
 
     def copy(self):
         copy = SystemFunction(self.name)

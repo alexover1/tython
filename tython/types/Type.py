@@ -8,7 +8,7 @@ class Type(Value):
         self.type = Types.Type
 
     def __repr__(self) -> str:
-        return f"<{self.value.name}>"
+        return f"\033[36m{self.value.name}\033[0m"
 
     def copy(self):
         copy = Type(self.value)

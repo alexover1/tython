@@ -11,7 +11,7 @@ class List(Value):
 
     def __repr__(self) -> str:
         elements = ", ".join([str(x) for x in self.elements])
-        return f"[{elements}] <{self.type.name}>"
+        return f"\033[36mList\033[0m [{elements}]"
 
     def copy(self):
         copy = List(self.elements)

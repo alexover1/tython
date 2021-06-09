@@ -3,7 +3,7 @@ def add(a, b)
 stop
 
 def test()
-    return "You are weird."
+    return "Hey! what's up?"
 stop
 
 int result = add(5, 11)
